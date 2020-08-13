@@ -14,24 +14,55 @@
 
     <p class="message"></p>
 
-    <div class="navigation">
-        <button class="up">↑</button><br>
-        <button class="left">←</button>
-        <button class="play">⚫</button>
-        <button class="right">→</button><br>
-        <button class="down">↓</button>
-    </div>
-
     <div class="control">
-        <button class="reset" hidden="true">Play Again!</button>
+        <button class="userGame">Play</button>
+        <button class="chBot">ch-Bot</button>
+        <button class="mcBot">mc-bot</button>
+        <button class="reset">Reset</button>
+        <!-- <button class="mccBot">mcc-bot</button> -->
     </div>
 
-    <div class="info">
-        <span class="score">SCORE:<span id="score"></span></span>
-        <span class="level">LEVEL:<span id="level"></span></span>
-        <span class="highest">HIGHEST:<span id="highest"></span></span>
-    </div>
+    <table class="info">
+        <thead>
+            <th>STATS</th>
+            <th>Value</th>
+            <th>Unit</th>
+        </thead>
+        
+        <tr class="score">
+            <td class="label">FOOD-EATEN</td>
+            <td id="foodEaten"></td>
+            <td>(<i>number</i>)</td>
+        </tr>
 
+        <tr>
+            <td>EATING-SPEED (<i>time</i>)</td>
+            <td id="eatingSpeedT"></td>
+            <td>(<i>sec/food</i>)</td>
+        </tr>
+
+        <tr class="score">
+            <td>EATING-SPEED (<i>distance</i>)</td>
+            <td id="eatingSpeedD"></td>
+            <td>(<i>meter/food</i>)</td>
+        </tr>
+
+        <tr>
+            <td>TIME-ELAPSED</td>
+            <td id="timeElapsed"></td>
+            <td>(<i>seconds</i>)</td>
+        </tr>
+
+        <tr>
+            <td>DISTANCE-TRAVELLED</td>
+            <td id="distanceTravelled"></td>
+            <td>(<i>meter</i>)</td>
+        </tr>
+
+    </table>
+
+    <script type="text/javascript" src="game.js"></script>
+    <script type="text/javascript" src="bot.js"></script>
     <script type="text/javascript" src="script.js"></script>
 
 </body>
