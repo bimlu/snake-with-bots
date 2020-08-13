@@ -110,8 +110,14 @@ class Bot {
         }
 
         let play = () => {
-            this.bot()
-            this.timerId = setTimeout(play, game.speedInterval);
+            this.bot();
+
+            if (snake.dead) {
+                bot.stop();
+                return;
+            }
+
+            this.timerId = setTimeout(play, game.updateInterval);
         }
         
         this.timerId = setTimeout(play, 0);

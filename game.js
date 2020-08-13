@@ -21,12 +21,19 @@ class Snake {
         this.headY = 20;
         this.tailX = [20, 20, 20];
         this.tailY = [19, 18, 17];
+
+        this.prevTailEnd = [];
+
         this.direction = 'right';
         this.dead = false;
         this.incrementInSize = 1;
     }
 
     moveSnake() {
+        // save prev tail end
+        this.prevTailEnd.push([ this.tailX[snake.tailX.length - 1],
+                                this.tailY[snake.tailY.length - 1] ]);
+    
         // make the tail follow the head
         for (let i = this.tailX.length - 1; i >= 1; i--) {
             this.tailX[i] = this.tailX[i-1];
@@ -38,25 +45,29 @@ class Snake {
 
         if (this.direction === 'right') {
             if (this.headY === TABLESIZE - 1) {
-                snake.dead = true
+                snake.dead = true;
+                this.prevTailEnd.pop();
             } else {
                 this.headY++;
             }
         } else if (this.direction === 'left') {
             if (this.headY === 0) {
-                snake.dead = true
+                snake.dead = true;
+                this.prevTailEnd.pop();
             } else {
                 this.headY--;
             }
         } else if (this.direction === 'up') {
             if (this.headX === 0) {
-                snake.dead = true
+                snake.dead = true;
+                this.prevTailEnd.pop();
             } else {
                 this.headX--;
             }
         } else if (this.direction === 'down') {
             if (this.headX === TABLESIZE - 1) {
-                snake.dead = true
+                snake.dead = true;
+                this.prevTailEnd.pop();
             } else {
                 this.headX++;
             }
@@ -145,15 +156,12 @@ let snake = new Snake()
 
 class Game {
     constructor() {
-        this.cells = [];
-
         this.player = null;
-        this.paused = true;
-
-        this.updateInterval = 100;
+        this.updateInterval = 10;
         this.updateId = null;
-        this.drawInterval = 80;
-        this.drawId = null
+        this.drawInterval = 100;
+        this.drawId = null;
+        this.paused = true;
 
         // info
         this.foodEaten = 0;
@@ -164,9 +172,8 @@ class Game {
 
         // always hide reset button
         document.querySelector('button.reset').hidden = true;
-        
+    
         this.createBoard();
-        this.render();
     }
 
     createBoard() {
@@ -179,6 +186,7 @@ class Game {
 
             for (let j = 0; j < TABLESIZE; j++) {
                 let td = document.createElement('td');
+                td.className = 'groundCell';
                 tr.appendChild(td);
             }
 
@@ -186,29 +194,30 @@ class Game {
         }
 
         board.appendChild(table);
+        this.render();
     }
 
     render() {
 
         let table = document.querySelector('table.table');
 
-        for (let i = 0; i < TABLESIZE; i++) {
-            for (let j = 0; j < TABLESIZE; j++) { 
-                table.children[i].children[j].className = 'groundCell';
-            }
-        }
+        // render tail as ground which has become ground
+        for (let [x, y] of snake.prevTailEnd) {
+            table.children[x].children[y].className = 'groundCell';
+        } 
+        snake.prevTailEnd = [];
 
-        table.children[snake.headX].children[snake.headY].className = 'headCell';
-        table.children[food.foodX].children[food.foodY].className = 'foodCell';
         for (let k = 0; k < snake.tailX.length; k++) {
             table.children[snake.tailX[k]].children[snake.tailY[k]].className = 'tailCell';
         }
+        table.children[snake.headX].children[snake.headY].className = 'headCell';
+        table.children[food.foodX].children[food.foodY].className = 'foodCell';
 
         document.querySelector('#foodEaten').innerHTML = this.foodEaten;
         document.querySelector('#eatingSpeedT').innerHTML = this.eatingSpeedT;
         document.querySelector('#eatingSpeedD').innerHTML = this.eatingSpeedD;
         document.querySelector('#timeElapsed').innerHTML = 
-                                                (this.timeElapsed).toFixed(2);
+                                                (this.timeElapsed / 1000).toFixed(2);
         document.querySelector('#distanceTravelled').innerHTML = this.distanceTravelled;
     }
 
@@ -222,56 +231,57 @@ class Game {
         document.querySelector('button.mcBot').hidden = true;
 
         let update = () => {
-            this.distanceTravelled += 1;
-            this.timeElapsed += this.updateInterval / 1000;
-
-            // save position of the last cell of the tail
-            let tailEndX = snake.tailX[ snake.tailX.length - 1 ];
-            let tailEndY = snake.tailY[ snake.tailY.length - 1 ];
+            this.distanceTravelled++;
+            this.timeElapsed += this.updateInterval; // time in milliseconds
 
             // move snake one step
             snake.moveSnake();
+
             // check if head hit the tail
             snake.checkIfHeadHitTail();
 
             if ( snake.dead ) {
+
                 this.stop();
 
                 // show the reset button when dead
-                document.querySelector('button.reset').hidden = false;   
+                document.querySelector('button.reset').hidden = false;
+            
                 let message = document.querySelector('p.message');
-                message.innerHTML = `Oops! the snake crashed. Your Ate <span style="color: red;">
-                ${this.foodEaten}</span> food <br>with an accuracy of <span style="color: red;">
-                ${this.eatingSpeedD}</span> <i>meter per food</i>.`;
+                message.innerHTML = `Oops! the snake crashed. Your Ate <span style="color: 
+                cyan;">${this.foodEaten}</span> food <br>with an accuracy of 
+                <span style="color:
+                 cyan;">${this.eatingSpeedD}</span> <i>meter per food</i>.`;
+        
                 return;
             }
 
             // check if snake got the food
             if ( snake.didSnakeGetFood() ) {
-                snake.increaseSnakeSize(tailEndX, tailEndY);
+                snake.increaseSnakeSize(...snake.prevTailEnd[snake.prevTailEnd.length - 1]);
                 food.createFood();
                 this.updateInfo();
                 this.render();
             }
 
-            this.render();
             this.updateId = setTimeout(update, this.updateInterval);
         }
+
         this.updateId = setTimeout(update, 0);
 
 
-        // // rander on the borad
-        // let draw = () => {
-        //     this.render();
-        //     this.drawId = setTimeout(draw, this.drawInterval);
 
-        // }
-        // this.drawId = setTimeout(draw, 0);
+        // draw
+        let draw = () => {
+            this.render();
+            this.drawId = setTimeout(draw, this.drawInterval);
+        }
+        this.drawId = setTimeout(draw, 0);
+
 
     }
 
     stop() {
-        //
         this.render();
         clearTimeout(this.updateId);
         clearTimeout(this.drawId);
@@ -294,11 +304,11 @@ class Game {
     updateInfo() {
         this.foodEaten += 1;
         this.eatingSpeedD = (this.distanceTravelled / this.foodEaten).toFixed();
-        this.eatingSpeedT = (this.timeElapsed / this.foodEaten).toFixed(2);
+        this.eatingSpeedT = ((this.timeElapsed / 1000) / this.foodEaten).toFixed(2);
 
-        if (this.updateInterval > 30) {
-            this.updateInterval -= 5;
-        }
+        // if (this.updateInterval > 20) {
+        //     this.updateInterval -= 2;
+        // }
     }
 
 }
