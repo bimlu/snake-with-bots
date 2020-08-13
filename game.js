@@ -21,12 +21,20 @@ class Snake {
         this.headY = 20;
         this.tailX = [20, 20, 20];
         this.tailY = [19, 18, 17];
+
+        this.prevTailEndX = 0;
+        this.prevTailEndY = 0;
+
         this.direction = 'right';
         this.dead = false;
         this.incrementInSize = 1;
     }
 
     moveSnake() {
+        // save prev tail end
+        this.prevTailEndX = this.tailX[snake.tailX.length - 1];
+        this.prevTailEndY = this.tailY[snake.tailY.length - 1];
+
         // make the tail follow the head
         for (let i = this.tailX.length - 1; i >= 1; i--) {
             this.tailX[i] = this.tailX[i-1];
@@ -142,7 +150,7 @@ let snake = new Snake()
 class Game {
     constructor() {
         this.player = null;
-        this.speedInterval = 80;
+        this.speedInterval = 10;
         this.timerId = null;
         this.paused = true;
 
@@ -169,6 +177,7 @@ class Game {
 
             for (let j = 0; j < TABLESIZE; j++) {
                 let td = document.createElement('td');
+                td.className = 'groundCell';
                 tr.appendChild(td);
             }
 
@@ -176,29 +185,19 @@ class Game {
         }
 
         board.appendChild(table);
-
         this.render();
     }
 
     render() {
+
         let table = document.querySelector('table.table');
 
-        for (let i = 0; i < TABLESIZE; i++) {
-            for (let j = 0; j < TABLESIZE; j++) {
-                let groundCell = table.children[i].children[j];
-                groundCell.className = 'groundCell';
-            }
-        }
+        table.children[snake.prevTailEndX].children[snake.prevTailEndY].className = 'groundCell';
 
-        let foodCell = table.children[food.foodX].children[food.foodY];
-        foodCell.className = 'foodCell';
-
-        let headCell = table.children[snake.headX].children[snake.headY];
-        headCell.className = 'headCell';
-
-        for (let i = 0; i < snake.tailX.length; i++) {
-            let tailCell = table.children[snake.tailX[i]].children[snake.tailY[i]];
-            tailCell.className = 'tailCell';
+        table.children[snake.headX].children[snake.headY].className = 'headCell';
+        table.children[food.foodX].children[food.foodY].className = 'foodCell';
+        for (let k = 0; k < snake.tailX.length; k++) {
+            table.children[snake.tailX[k]].children[snake.tailY[k]].className = 'tailCell';
         }
 
         document.querySelector('#foodEaten').innerHTML = this.foodEaten;
@@ -222,10 +221,6 @@ class Game {
             this.distanceTravelled += 1;
             this.timeElapsed += this.speedInterval / 1000;
 
-            // save position of the last cell of the tail
-            let tailEndX = snake.tailX[ snake.tailX.length - 1 ];
-            let tailEndY = snake.tailY[ snake.tailY.length - 1 ];
-
             // move snake one step
             snake.moveSnake();
 
@@ -239,15 +234,17 @@ class Game {
                 document.querySelector('button.reset').hidden = false;
             
                 let message = document.querySelector('p.message');
-                message.innerHTML = `Oops! the snake crashed. Your Ate <span style="color: red;">${this.foodEaten}</span> 
-                food <br>with an accuracy of <span style="color: red;">${this.eatingSpeedD}</span> <i>meter per food</i>.`;
+                message.innerHTML = `Oops! the snake crashed. Your Ate <span style="color: 
+                red;">${this.foodEaten}</span> food <br>with an accuracy of 
+                <span style="color:
+                 red;">${this.eatingSpeedD}</span> <i>meter per food</i>.`;
         
                 return;
             }
 
             // check if snake got the food
             if ( snake.didSnakeGetFood() ) {
-                snake.increaseSnakeSize(tailEndX, tailEndY);
+                snake.increaseSnakeSize(snake.prevTailEndX, snake.prevTailEndY);
                 food.createFood();
                 this.updateInfo();
             }
@@ -283,9 +280,9 @@ class Game {
         this.eatingSpeedD = (this.distanceTravelled / this.foodEaten).toFixed();
         this.eatingSpeedT = (this.timeElapsed / this.foodEaten).toFixed(2);
 
-        if (this.speedInterval > 40) {
-            this.speedInterval -= 1;
-        }
+        // if (this.speedInterval > 10) {
+        //     this.speedInterval -= 1;
+        // }
     }
 
 }
