@@ -1,4 +1,4 @@
-const TABLESIZE = 20;
+const TABLESIZE = 10;
 
 class Food {
     constructor() {
