@@ -1,5 +1,6 @@
 let game = new Game();
 let bot;
+let graph;
 
 document.addEventListener('keydown', (e) => {
     if (game.player === 'bot') {
@@ -63,15 +64,16 @@ document.querySelector('button.mcBot').addEventListener('click', (e) => {
     bot.start();
 })
 
-// document.querySelector('button.mccBot').addEventListener('click', (e) => {
-//     if (game.player) {
-//         return;
-//     }
+document.querySelector('button.mccBot').addEventListener('click', (e) => {
+    if (game.player) {
+        return;
+    }
 
-//     game.player = 'bot';
-//     bot = new Bot('mccBot');
-//     bot.start();
-// })
+    graph = new Graph();
+    game.player = 'bot';
+    bot = new Bot('mccBot');
+    bot.start();
+})
 
 document.querySelector('button.reset').addEventListener('click', (e) => {
  
@@ -81,4 +83,5 @@ document.querySelector('button.reset').addEventListener('click', (e) => {
     document.querySelector('button.userGame').hidden = false;
     document.querySelector('button.chBot').hidden = false;
     document.querySelector('button.mcBot').hidden = false;
+    document.querySelector('button.mccBot').hidden = false;
 })

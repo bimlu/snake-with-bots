@@ -1,14 +1,33 @@
-const TABLESIZE = 10;
+const TABLESIZE = 4;
 
 class Food {
     constructor() {
-        this.foodX = 10;
-        this.foodY = 10;
+        this.foodX = 0;
+        this.foodY = 0;
     }
 
     createFood() {
-        this.foodX = Math.floor( Math.random() * TABLESIZE );
-        this.foodY = Math.floor( Math.random() * TABLESIZE );
+        while (true) {
+            this.foodX = Math.floor( Math.random() * TABLESIZE );
+            this.foodY = Math.floor( Math.random() * TABLESIZE );
+
+            let validFood = true;
+
+            for (let i = 0; i < snake.tailX.length; i++) {
+                if (this.foodX===snake.tailX[i] && this.foodY===snake.tailY[i]) {
+                    validFood = false;
+                    break;
+                }
+            }
+
+            if (this.foodX===snake.headX && this.foodY===snake.headY) {
+                validFood = false;
+            }
+
+            if (validFood) {
+                break;
+            }
+        }     
     }
 }
 
@@ -17,10 +36,10 @@ let food = new Food()
 class Snake {
     constructor() {
         // X, Y => down, right
-        this.headX = 20;
-        this.headY = 20;
-        this.tailX = [20, 20, 20];
-        this.tailY = [19, 18, 17];
+        this.headX = 2;
+        this.headY = 1;
+        this.tailX = [2];
+        this.tailY = [0];
 
         this.prevTailEnd = [];
 
@@ -117,7 +136,7 @@ class Snake {
     }
 
     increaseSnakeSize(prevTailEndX, prevTailEndY) {
-        for (let i = 0; i <= this.incrementInSize; i++) {
+        for (let i = 0; i < this.incrementInSize; i++) {
             this.tailX.push( prevTailEndX );
             this.tailY.push( prevTailEndY );
         }
@@ -157,7 +176,7 @@ let snake = new Snake()
 class Game {
     constructor() {
         this.player = null;
-        this.updateInterval = 10;
+        this.updateInterval = 200;
         this.updateId = null;
         this.drawInterval = 100;
         this.drawId = null;
@@ -229,6 +248,7 @@ class Game {
         document.querySelector('button.userGame').hidden = true;
         document.querySelector('button.chBot').hidden = true;
         document.querySelector('button.mcBot').hidden = true;
+        document.querySelector('button.mccBot').hidden = true;
 
         let update = () => {
             this.distanceTravelled++;

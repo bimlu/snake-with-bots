@@ -68,7 +68,41 @@ class Bot {
     }
 
     mccBot() {
-        if (snake.headX === 0 && snake.headY === 0) {
+        graph.graph = graph.makeGraph();
+        // remove vertex from graph where tail is filled
+        for (let i = 0; i < snake.tailX.length; i++) {
+            let tailVertex = snake.tailX[i] * graph.GRIDSIZE + snake.tailY[i];
+            graph.removeVertex(tailVertex);
+
+            // remove all connections of this vertex from graph
+            for (let vert in graph.graph) {
+                let neigs = graph.graph[vert];
+                neigs.forEach(neig => {
+                    if (neig === tailVertex) {
+                        graph.removeEdge([vert, neig]);
+                    }
+                })
+            }
+        }
+
+        // vertices of head and food
+        let headVertex = snake.headX * graph.GRIDSIZE + snake.headY;
+        let foodVertex = food.foodX * graph.GRIDSIZE + food.foodY;
+
+        // find the shortest path from head to food, e.g. path = [1, 2, 6]
+        let path = graph.shortestPath(headVertex, foodVertex);
+
+        if (path) {
+            if (path[1] === headVertex + 1) {
+                snake.moveRight();
+            } else if (path[1] === headVertex - 1) {
+                snake.moveLeft();
+            } else if (path[1] === headVertex + graph.GRIDSIZE) {
+                snake.moveDown();
+            } else if (path[1] === headVertex - graph.GRIDSIZE) {
+                snake.moveUp();
+            }
+        } else if (snake.headX === 0 && snake.headY === 0) {
             (snake.direction === 'up') ? snake.moveRight() : snake.moveDown();
         } else if (snake.headX === 0 && snake.headY === TABLESIZE - 1) {
             (snake.direction === 'right') ? snake.moveDown() : snake.moveLeft();
@@ -89,8 +123,7 @@ class Bot {
         } else if (food.foodY === snake.headY) {
             (food.foodX > snake.headX) ? snake.moveDown() : snake.moveUp();
         }
-
-
+        
     }
 
     start() {
