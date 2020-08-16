@@ -37,42 +37,7 @@ class Graph {
             }
         }
         return g;
-    }
-
-    generateEdges() {
-        edges = [];
-        for (let vertex of Object.keys(this.graph)) {
-            vertex = +vertex;
-            for (let neighbour of this.graph[vertex]) {
-                neighbour = +neighbour;
-                let dup = false;
-                for (let edge of edges) {
-                    if(edge[0]===neighbour && edge[1]===vertex){
-                        dup = true;
-                        break;
-                    }
-                }
-                if (!dup) {
-                    edges.push([vertex, neighbour]);
-                }
-            }
-        }
-
-        dedges = []
-        for (let [k, v] of edges) {
-            d = {};
-            d[k] = v;
-            dedges.push(d);
-        }
-        return dedges
-    }
-
-    vertices() {
-        return Object.keys(this.graph).map(el => +el);
-    }
-
-    edges() {
-        return this.generateEdges();
+        
     }
 
     addVertex(vertex) {
@@ -102,54 +67,37 @@ class Graph {
         this.graph[vert].splice(idx, 1);
     }
 
-    findPath(start_vertex, end_vertex, path=null) {
-        if (path === null) {
-            path = [];
-        }
-        let graph = this.graph;
-        path.push(start_vertex);
-        if (start_vertex === end_vertex) {
-            return path;
-        } 
-        if (!(start_vertex in graph)) {
-            return null;
-        }
-        for (let vertex of graph[start_vertex]) {
-            if ( !(path.includes(vertex)) ) {
-                let extended_path = 
-                        this.findPath(vertex, end_vertex, path);
-                if (extended_path) {
-                    return extended_path;
-                }
-            }
-        }
-        return null;
-    }
-    
-    findAllPaths(start_vertex, end_vertex, path=[]) {
-        let graph = this.graph;
-        path.push(start_vertex);
-        if (start_vertex === end_vertex) {
-            return [path];
-        } 
-        if (!(start_vertex in graph)) {
-            return [];
-        }
-        let paths = []
-        for (let vertex of graph[start_vertex]) {
-            if ( !(path.includes(vertex)) ) {
-                let extended_paths = 
-                    this.findAllPaths(vertex, end_vertex, path.slice());
-                for (let p of extended_paths) {
-                    paths.push(p);
-                }
-            }
-        }
-        return paths;
-    }
+    findShortestPathBFS(root, goal) {
+        let parent = {};
+        let discovered = [];
+        let queue = [];
 
-    shortestPath(start_vertex, end_vertex) {
-        let paths = this.findAllPaths(start_vertex, end_vertex);
-        return paths.sort((a, b) => a.length - b.length)[0];
+        discovered.push(root);
+        queue.push(root);
+
+        while (queue) {
+            let node = queue.shift();
+            if (node === goal) {
+                let path = [goal];
+                while (goal !== root) {
+                    let new_goal = parent[goal];
+                    path.push(new_goal);
+                    goal = new_goal;
+                }
+                return path.reverse();
+            }
+
+            if (!this.graph[node]) {
+                return null;
+            }
+
+            for (let neighbour of this.graph[node]) {
+                if ( !discovered.includes(neighbour) ) {
+                    discovered.push(neighbour);
+                    parent[neighbour] = node;
+                    queue.push(neighbour);
+                }
+            }
+        }
     }
 }

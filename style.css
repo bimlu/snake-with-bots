@@ -5,24 +5,30 @@ body {
     background-color: #586579;;
 }
 
-p.title { font-size:24px; 
+p.title { font-size:18px; 
 		color: lightgreen; }
 
 table.table { border:1px solid grey;
 	border: groove;
     margin:0 auto; box-shadow: 4px 3px 20px 1px #272f2c;}
 
-td.foodCell { background:#9ce39c; width:50px; height:50px; border: dashed;}
-td.headCell { background:#eae7ed;; width:50px; height:50px; border: dashed;}
-td.tailCell { background:#94c9d6; width:50px; height:50px; border: dashed}
-td.groundCell { background:#974658; width:50px; height:50px; border: dashed;}
+table.table > tr > td {
+	width: 8px;
+	height: 8px;
+	border: dashed;
+}
+
+td.foodCell { background:#9ce39c; }
+td.headCell { background:#eae7ed;}
+td.tailCell { background:#94c9d6; }
+td.groundCell { background:#974658; }
 
 table.info {
 	color: lightgreen;
     margin: auto;
-    width: fit-content;
+    width: auto;
     text-align: left;
-    font-size: 16px;
+    font-size: 12px;
 }  
 
 table.info thead {
@@ -34,7 +40,7 @@ tr.score td{
 }
 
 table.info td {
-	padding-right: 26px;
+	padding-right: 16px;
 }
 
 button { font-family:monospace;
@@ -48,6 +54,7 @@ button { font-family:monospace;
 
 div.control { margin:16px 8px; }
 
-p.message {
+div.message {
 	color: orange;
+	font-size: 12px;
 }

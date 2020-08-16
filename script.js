@@ -2,10 +2,10 @@ let game = new Game();
 let bot;
 let graph;
 
-document.addEventListener('keydown', (e) => {
+let gameControl = (e) => {
     if (game.player === 'bot') {
         if (e.key === 'Enter' || e.key === ' ') {
-            (game.paused === true) ? bot.start() : bot.stop();
+            (game.paused === true) ? bot.start() : bot.pause();
         }
 
         return;
@@ -14,7 +14,7 @@ document.addEventListener('keydown', (e) => {
     switch (e.key) {
         case 'Enter':
         case ' ':
-            (game.paused === true) ? game.start() : game.stop();
+            (game.paused === true) ? game.start() : game.pause();
             break;
         case 'ArrowLeft':
         case 'a':
@@ -33,7 +33,9 @@ document.addEventListener('keydown', (e) => {
             snake.moveDown();
             break;
     }
-});
+}
+
+document.addEventListener('keydown', gameControl);
 
 document.querySelector('button.userGame').addEventListener('click', (e) => {
     if (game.player) {

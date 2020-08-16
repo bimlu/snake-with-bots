@@ -12,7 +12,7 @@
     <p class="title">THE SNAKE</p>
     <div class="board"></div>
 
-    <p class="message"></p>
+    <div class="message"></div>
 
     <div class="control">
         <button class="userGame">Play</button>
@@ -25,26 +25,26 @@
     <table class="info">
         <thead>
             <th>STATS</th>
-            <th>Value</th>
-            <th>Unit</th>
+            <th>VALUE</th>
+            <th>UNIT</th>
         </thead>
         
         <tr class="score">
-            <td class="label">FOOD-EATEN</td>
+            <td>FOOD-EATEN</td>
             <td id="foodEaten"></td>
             <td>(<i>number</i>)</td>
         </tr>
 
         <tr>
-            <td>EATING-SPEED (<i>time</i>)</td>
+            <td>EATING-SPEED</td>
             <td id="eatingSpeedT"></td>
             <td>(<i>sec/food</i>)</td>
         </tr>
 
-        <tr class="score">
-            <td>EATING-SPEED (<i>distance</i>)</td>
+        <tr>
+            <td>EATING-SPEED</td>
             <td id="eatingSpeedD"></td>
-            <td>(<i>meter/food</i>)</td>
+            <td>(<i>cell/food</i>)</td>
         </tr>
 
         <tr>
@@ -54,9 +54,14 @@
         </tr>
 
         <tr>
-            <td>DISTANCE-TRAVELLED</td>
+            <td>TRAVELLED</td>
             <td id="distanceTravelled"></td>
-            <td>(<i>meter</i>)</td>
+            <td>(<i>cell</i>)</td>
+        </tr>
+        <tr class='score'>
+            <td>ACCURACY</td>
+            <td id="accuracy"></td>
+            <td>(<i>%</i>)</td>
         </tr>
 
     </table>

@@ -90,7 +90,7 @@ class Bot {
         let foodVertex = food.foodX * graph.GRIDSIZE + food.foodY;
 
         // find the shortest path from head to food, e.g. path = [1, 2, 6]
-        let path = graph.shortestPath(headVertex, foodVertex);
+        let path = graph.findShortestPathBFS(headVertex, foodVertex);
 
         if (path) {
             if (path[1] === headVertex + 1) {
@@ -102,27 +102,7 @@ class Bot {
             } else if (path[1] === headVertex - graph.GRIDSIZE) {
                 snake.moveUp();
             }
-        } else if (snake.headX === 0 && snake.headY === 0) {
-            (snake.direction === 'up') ? snake.moveRight() : snake.moveDown();
-        } else if (snake.headX === 0 && snake.headY === TABLESIZE - 1) {
-            (snake.direction === 'right') ? snake.moveDown() : snake.moveLeft();
-        } else if (snake.headX === TABLESIZE - 1 && snake.headY === TABLESIZE -1) {
-            (snake.direction === 'down') ? snake.moveLeft() : snake.moveUp();
-        } else if (snake.headX === TABLESIZE - 1 && snake.headY === 0) {
-            (snake.direction === 'left') ? snake.moveUp() : snake.moveRight();
-        } else if (snake.headX === 0 && snake.direction === 'up') {
-            (food.foodY > snake.headY) ? snake.moveRight() : snake.moveLeft();
-        } else if (snake.headY === TABLESIZE - 1 && snake.direction === 'right') {
-            (food.foodX > snake.headX) ? snake.moveDown() : snake.moveUp();
-        } else if (snake.headX === TABLESIZE - 1 && snake.direction === 'down') {
-            (food.foodY > snake.headY) ? snake.moveRight() : snake.moveLeft();
-        } else if (snake.headY === 0 && snake.direction === 'left') {
-            (food.foodX > snake.headX) ? snake.moveDown() : snake.moveUp();
-        } else if (food.foodX === snake.headX) {
-            (food.foodY > snake.headY) ? snake.moveRight() : snake.moveLeft();
-        } else if (food.foodY === snake.headY) {
-            (food.foodX > snake.headX) ? snake.moveDown() : snake.moveUp();
-        }
+        } 
         
     }
 
@@ -156,8 +136,13 @@ class Bot {
         this.timerId = setTimeout(play, 0);
     }
 
+    pause() {
+        clearTimeout(this.timerId);
+        game.pause();
+    }
+
     stop() {
         clearTimeout(this.timerId);
-        game.stop()
+        game.stop();
     }
 }

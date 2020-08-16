@@ -1,45 +1,12 @@
-const TABLESIZE = 4;
-
-class Food {
-    constructor() {
-        this.foodX = 0;
-        this.foodY = 0;
-    }
-
-    createFood() {
-        while (true) {
-            this.foodX = Math.floor( Math.random() * TABLESIZE );
-            this.foodY = Math.floor( Math.random() * TABLESIZE );
-
-            let validFood = true;
-
-            for (let i = 0; i < snake.tailX.length; i++) {
-                if (this.foodX===snake.tailX[i] && this.foodY===snake.tailY[i]) {
-                    validFood = false;
-                    break;
-                }
-            }
-
-            if (this.foodX===snake.headX && this.foodY===snake.headY) {
-                validFood = false;
-            }
-
-            if (validFood) {
-                break;
-            }
-        }     
-    }
-}
-
-let food = new Food()
+const TABLESIZE = 20;
 
 class Snake {
     constructor() {
         // X, Y => down, right
-        this.headX = 2;
-        this.headY = 1;
-        this.tailX = [2];
-        this.tailY = [0];
+        this.headX = Math.floor(TABLESIZE / 2);
+        this.headY = Math.floor(TABLESIZE / 2);
+        this.tailX = [Math.floor(TABLESIZE / 2)];
+        this.tailY = [Math.floor(TABLESIZE / 2) - 1];
 
         this.prevTailEnd = [];
 
@@ -173,12 +140,46 @@ class Snake {
 
 let snake = new Snake()
 
+class Food {
+    constructor() {
+        this.foodX = null;
+        this.foodY = null;
+        this.createFood();
+    }
+
+    createFood() {
+        while (true) {
+            this.foodX = Math.floor( Math.random() * TABLESIZE );
+            this.foodY = Math.floor( Math.random() * TABLESIZE );
+
+            let validFood = true;
+
+            for (let i = 0; i < snake.tailX.length; i++) {
+                if (this.foodX===snake.tailX[i] && this.foodY===snake.tailY[i]) {
+                    validFood = false;
+                    break;
+                }
+            }
+
+            if (this.foodX===snake.headX && this.foodY===snake.headY) {
+                validFood = false;
+            }
+
+            if (validFood) {
+                break;
+            }
+        }     
+    }
+}
+
+let food = new Food()
+
 class Game {
     constructor() {
         this.player = null;
-        this.updateInterval = 200;
+        this.updateInterval = 30;
         this.updateId = null;
-        this.drawInterval = 100;
+        this.drawInterval = 60;
         this.drawId = null;
         this.paused = true;
 
@@ -188,6 +189,7 @@ class Game {
         this.eatingSpeedD = 0;
         this.timeElapsed = 0;
         this.distanceTravelled = 0;
+        this.accuracy = 0;
 
         // always hide reset button
         document.querySelector('button.reset').hidden = true;
@@ -238,10 +240,11 @@ class Game {
         document.querySelector('#timeElapsed').innerHTML = 
                                                 (this.timeElapsed / 1000).toFixed(2);
         document.querySelector('#distanceTravelled').innerHTML = this.distanceTravelled;
+        document.querySelector('#accuracy').innerHTML = this.accuracy;
     }
 
     start() {
-        this.stop();
+        this.pause();
         this.paused = false;
 
         // hide all buttons while the game is on
@@ -267,11 +270,12 @@ class Game {
                 // show the reset button when dead
                 document.querySelector('button.reset').hidden = false;
             
-                let message = document.querySelector('p.message');
-                message.innerHTML = `Oops! the snake crashed. Your Ate <span style="color: 
-                cyan;">${this.foodEaten}</span> food <br>with an accuracy of 
-                <span style="color:
-                 cyan;">${this.eatingSpeedD}</span> <i>meter per food</i>.`;
+                let message = document.querySelector('div.message');
+                message.innerHTML = `Crashed! <span style="color:lightgreen;
+                font-size:20px">&#128546</span>
+                 FOOD: <span style="color: 
+                cyan;">${this.foodEaten}</span> ACCURACY: <span style="color:
+                 cyan;">${this.accuracy}</span><i>%</i>.`;
         
                 return;
             }
@@ -297,22 +301,31 @@ class Game {
             this.drawId = setTimeout(draw, this.drawInterval);
         }
         this.drawId = setTimeout(draw, 0);
-
-
     }
 
-    stop() {
+    pause() {
         this.render();
         clearTimeout(this.updateId);
         clearTimeout(this.drawId);
         this.paused = true;
     }
 
+    stop() {
+        this.pause();
+
+        // disable game control
+        document.removeEventListener('keydown', gameControl);        
+    }
+
     reset() {
         // remove the previous goodbye message
-        document.querySelector('p.message').innerHTML = '' ;
+        document.querySelector('div.message').innerHTML = '' ;
 
         this.stop();
+
+        // enable game control
+        document.addEventListener('keydown', gameControl);
+
         let table = document.querySelector('.board').children[0];
         table.remove();
 
@@ -325,6 +338,11 @@ class Game {
         this.foodEaten += 1;
         this.eatingSpeedD = (this.distanceTravelled / this.foodEaten).toFixed();
         this.eatingSpeedT = ((this.timeElapsed / 1000) / this.foodEaten).toFixed(2);
+        this.accuracy = ((15 / this.eatingSpeedD) * 100).toFixed(2);
+
+        if (this.accuracy > 99) {
+            this.accuracy = 99.99
+        }
 
         // if (this.updateInterval > 20) {
         //     this.updateInterval -= 2;
