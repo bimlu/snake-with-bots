@@ -1,6 +1,8 @@
 class Graph {
     constructor() {
+        // number of vertices in graph == GRIDSIZE**2
         this.GRIDSIZE = TABLESIZE;
+        this.graph = this.makeGraph();
     }
 
     makeGraph() {
@@ -42,7 +44,7 @@ class Graph {
 
     addVertex(vertex) {
         if (!(vertex in this.graph)) {
-            this.graph[vertex] = []
+            this.graph[vertex] = [];
         }
     }
 
@@ -50,14 +52,18 @@ class Graph {
         let vertex1, vertex2;
         [vertex1, vertex2] = edge;
         if (vertex1 in this.graph) {
-            this.graph[vertex1].push(vertex2);
+            if (!this.graph[vertex1].includes(vertex2)) {
+                this.graph[vertex1].push(vertex2);
+            }
         } else {
             this.graph[vertex1] = [vertex2]
         }
     }
 
     removeVertex(vertex) {
-        delete this.graph[vertex];
+        if (vertex in this.graph) {
+            delete this.graph[vertex];
+        }
     }
 
     removeEdge(edge) {
@@ -84,11 +90,12 @@ class Graph {
                     path.push(new_goal);
                     goal = new_goal;
                 }
-                return path.reverse();
+                // returns reversed path from food -> head
+                return path;
             }
 
             if (!this.graph[node]) {
-                return null;
+                return [];
             }
 
             for (let neighbour of this.graph[node]) {
@@ -99,5 +106,7 @@ class Graph {
                 }
             }
         }
+
+        return [];
     }
 }

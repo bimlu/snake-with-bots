@@ -177,7 +177,7 @@ let food = new Food()
 class Game {
     constructor() {
         this.player = null;
-        this.updateInterval = 30;
+        this.updateInterval = 10;
         this.updateId = null;
         this.drawInterval = 60;
         this.drawId = null;
