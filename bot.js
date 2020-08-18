@@ -99,42 +99,6 @@ class Bot {
         }
     }
 
-    mccBot_openPath(vertex) {
-        // add vertex to the graph
-        graph.addVertex(vertex);
-
-        /*add new edges*/
-
-        let possibleNeighbours = this.mccBot_possibleNeighbours(vertex);
-
-        for (let el of possibleNeighbours) {
-            if (vertex + el in graph.graph) {
-                graph.addEdge([vertex, vertex + el]);
-                graph.addEdge([vertex + el, vertex]);
-            }
-        }
-    }
-
-    mccBot_closePath(vertex) {
-        // remove vertex from graph
-        graph.removeVertex(vertex);
-
-        /*remove all connections of this vertex from graph*/
-
-        let possibleNeighbours = this.mccBot_possibleNeighbours(vertex);
-
-        for (let el of possibleNeighbours) {
-            if (vertex + el in graph.graph) {
-                let neigs = graph.graph[vertex + el];
-                neigs.forEach(neig => {
-                    if (neig === vertex) {
-                        graph.removeEdge([vertex + el, neig]);
-                    }
-                })
-            }
-        }
-    }
-
     mccBot_initializeGraph() {
         // make graph
         graph.graph = graph.makeGraph();
@@ -181,6 +145,7 @@ class Bot {
         }
 
         if (this.path.length === 0) {
+            this.mccBot_initializeGraph();
             this.mccBot_calculatePath();
         }
 
@@ -195,20 +160,7 @@ class Bot {
             snake.moveDown();
         } else if (cell === headVertex - graph.GRIDSIZE) {
             snake.moveUp();
-        }
-
-        // snake has moved one cell
-        this.mccBot_closePath(headVertex);
-
-        if (this.tailLength === snake.tailX.length) {
-            let tailEnd = snake.tailX[snake.tailX.length-1] * graph.GRIDSIZE
-                             + snake.tailY[snake.tailY.length-1]; 
-            // add tailEndVertex to the graph
-            this.mccBot_openPath(tailEnd);
-        } else {
-            this.tailLength = snake.tailX.length;
-        } 
-   
+        }   
     }
 
     start() {

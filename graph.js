@@ -42,24 +42,6 @@ class Graph {
         
     }
 
-    addVertex(vertex) {
-        if (!(vertex in this.graph)) {
-            this.graph[vertex] = [];
-        }
-    }
-
-    addEdge(edge) {
-        let vertex1, vertex2;
-        [vertex1, vertex2] = edge;
-        if (vertex1 in this.graph) {
-            if (!this.graph[vertex1].includes(vertex2)) {
-                this.graph[vertex1].push(vertex2);
-            }
-        } else {
-            this.graph[vertex1] = [vertex2]
-        }
-    }
-
     removeVertex(vertex) {
         if (vertex in this.graph) {
             delete this.graph[vertex];
